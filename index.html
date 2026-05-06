@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>First Album of Hans</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1410;
+  --paper: #f5f0e8;
+  --cream: #ede8dc;
+  --warm: #c8a96e;
+  --muted: #8a7f72;
+  --faint: #d4cfc6;
+  --accent: #2c4a6e;
+  --red: #8b3a2a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Noto Serif KR', serif;
+  min-height: 100vh;
+}
+.site-header {
+  position: relative;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 3rem 2rem 2rem;
+  overflow: hidden;
+}
+.header-grain {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.3; pointer-events: none;
+}
+.header-inner { position: relative; max-width: 720px; margin: 0 auto; display: flex; gap: 2rem; align-items: flex-end; }
+.album-cover {
+  width: 120px; height: 120px;
+  background: linear-gradient(135deg, #0d1f3c 0%, #1a3a6e 50%, #2c4a6e 100%);
+  border-radius: 4px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 4px 4px 20px rgba(0,0,0,0.4);
+}
+.cover-moon { width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #eef6ff, #aac8e8); }
+.cover-label { font-family: 'Space Mono', monospace; font-size: 8px; color: #8ab8e0; letter-spacing: 3px; text-align: center; }
+.header-text { flex: 1; padding-bottom: 4px; }
+.album-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--warm); letter-spacing: 3px; margin-bottom: 8px; }
+.album-title { font-family: 'DM Serif Display', serif; font-size: 2rem; line-height: 1.1; color: var(--paper); margin-bottom: 8px; }
+.album-meta { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+.nav-tabs {
+  background: var(--cream);
+  border-bottom: 1px solid var(--faint);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-inner { max-width: 720px; margin: 0 auto; display: flex; }
+.tab {
+  padding: 14px 20px; font-size: 12px; font-family: 'Space Mono', monospace;
+  letter-spacing: 1px; color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+  background: none; border-top: none; border-left: none; border-right: none;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.main { max-width: 720px; margin: 0 auto; padding: 2rem; }
+.page { display: none; }
+.page.active { display: block; }
+.section-label {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 4px; color: var(--muted); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--faint); }
+.track-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 0 16px;
+  align-items: start;
+  border-top: 1px solid var(--faint);
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.track-row:last-child { border-bottom: 1px solid var(--faint); }
+.track-row:hover { background: var(--cream); margin: 0 -2rem; padding: 1rem 2rem; }
+.track-num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); padding-top: 3px; }
+.track-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.track-genre { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+.track-story {
+  grid-column: 2 / 4;
+  margin-top: 12px; padding: 16px;
+  background: var(--cream);
+  border-left: 3px solid var(--warm);
+  border-radius: 0 4px 4px 0;
+  display: none;
+}
+.track-story.open { display: block; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.story-text { font-size: 13px; line-height: 1.9; color: #3a3028; margin-bottom: 12px; }
+.story-quote {
+  font-family: 'DM Serif Display', serif; font-style: italic;
+  font-size: 14px; color: var(--accent); line-height: 1.6;
+  padding: 8px 0 8px 16px; border-left: 2px solid var(--accent);
+}
+.embed-slot {
+  margin-top: 14px; padding: 12px;
+  background: white; border-radius: 4px;
+  border: 1px dashed var(--faint);
+}
+.embed-slot iframe { width: 100%; border: none; border-radius: 4px; }
+.embed-placeholder {
+  text-align: center; padding: 16px;
+  font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted);
+}
+.track-dur { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); padding-top: 3px; }
+.tag-title { font-size: 10px; font-family: 'Space Mono', monospace; padding: 2px 8px; background: var(--accent); color: white; border-radius: 2px; }
+.about-hero { display: flex; gap: 2rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--faint); }
+.about-cover {
+  width: 80px; height: 80px; flex-shrink: 0;
+  background: linear-gradient(135deg, #0d1f3c, #2c4a6e);
+  border-radius: 4px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 5px;
+}
+.about-cover-moon { width: 20px; height: 20px; border-radius: 50%; background: #ddeeff; }
+.about-cover-text { font-size: 6px; color: #8ab8e0; letter-spacing: 2px; }
+.about-desc { font-size: 14px; line-height: 2; color: #3a3028; }
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--faint); margin-bottom: 2rem; }
+.stat { background: var(--paper); padding: 16px; text-align: center; }
+.stat-num { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--ink); }
+.stat-label { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-top: 2px; }
+.about-section { margin-bottom: 1.5rem; }
+.about-section h3 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 8px; }
+.about-section p { font-size: 13px; line-height: 1.9; color: #3a3028; }
+.guide-step { display: flex; gap: 16px; padding: 1.5rem 0; border-bottom: 1px solid var(--faint); }
+.guide-step:last-child { border-bottom: none; }
+.step-badge {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--ink); color: var(--paper);
+  font-family: 'Space Mono', monospace; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.step-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.step-content p { font-size: 13px; line-height: 1.8; color: #3a3028; }
+.code-block {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--ink); color: #a8c8e0;
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  border-radius: 4px; line-height: 1.8;
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-grain"></div>
+  <div class="header-inner">
+    <div class="album-cover">
+      <div class="cover-moon"></div>
+      <div class="cover-label">FIRST<br>ALBUM</div>
+    </div>
+    <div class="header-text">
+      <div class="album-eyebrow">HANS · 2026</div>
+      <div class="album-title">First Album<br><em>of Hans</em></div>
+      <div class="album-meta">9 TRACKS · INDIE / K-POP / GARAGE ROCK</div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-inner">
+    <button class="tab active" onclick="showTab('tracks',this)">TRACKS</button>
+    <button class="tab" onclick="showTab('about',this)">ABOUT</button>
+    <button class="tab" onclick="showTab('guide',this)">GUIDE</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <div id="page-tracks" class="page active">
+    <div class="section-label">TRACK LIST</div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">01</div>
+      <div class="track-body">
+        <div class="track-title">그대여</div>
+        <div class="track-genre">K-POP HIP-HOP</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <span class="tag-title">TITLE</span>
+        <span class="track-dur">3:24</span>
+      </div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <!-- SoundCloud 임베드를 여기에 붙여넣으세요 -->
+          <!-- 예시: <iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=YOUR_TRACK_URL"></iframe> -->
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          과거의 사랑했던 그녀를 떠올리며 쓴 곡이에요. 소년이여의 라임과 구조를 참고해 만들었고, 빛과 저무는 날의 대비로 그리움을 표현했습니다.
+        </div>
+        <div class="story-quote">"빛나던 날이 있으면 저무는 날도 있는 법<br>후회해도 소용없어, I miss you"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">02</div>
+      <div class="track-body">
+        <div class="track-title">강릉 가는 길</div>
+        <div class="track-genre">RETRO FOLK BALLAD</div>
+      </div>
+      <div class="track-dur">3:10</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          고향 강릉으로 가는 버스 안에서 쓴 곡이에요. 아버지 미소와 어머니 손맛이 그리워질 때마다 떠올리는 풍경을 담았습니다.
+        </div>
+        <div class="story-quote">"어머니 미소 속에서 다시 찾은 나의 根"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">03</div>
+      <div class="track-body">
+        <div class="track-title">호숫가에서</div>
+        <div class="track-genre">INDIE LOFI FOLK</div>
+      </div>
+      <div class="track-dur">3:05</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          춘천 호숫가를 산책하다 쓴 곡이에요. 오리떼, 개미, 말라버린 지렁이까지 — 작은 것들이 던져주는 삶의 질문을 담았습니다.
+        </div>
+        <div class="story-quote">"이 길 끝엔 무엇이 있을까"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">04</div>
+      <div class="track-body">
+        <div class="track-title">Your Smile</div>
+        <div class="track-genre">KOREAN R&B NEO SOUL</div>
+      </div>
+      <div class="track-dur">3:20</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          아내와 어머니에게 바치는 곡이에요. 내 곁에서 묵묵히 함께해준 두 사람의 미소가 내 삶의 등불이 되었다는 이야기입니다.
+        </div>
+        <div class="story-quote">"Thanks for mom and wife"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">05</div>
+      <div class="track-body">
+        <div class="track-title">1974년생</div>
+        <div class="track-genre">INDIE POP BALLAD</div>
+      </div>
+      <div class="track-dur">3:30</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          쉰이 넘어 돌아보는 내 인생 이야기예요. 골목길 라디오 소리부터 퇴직 후 거울 속 나까지 — 모든 순간이 소중했다는 고백입니다.
+        </div>
+        <div class="story-quote">"난 여전히 1974년생"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">06</div>
+      <div class="track-body">
+        <div class="track-title">Dancin' in the Rain</div>
+        <div class="track-genre">SYNTHWAVE INDIE ROCK</div>
+      </div>
+      <div class="track-dur">3:15</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          빗속에서 느꼈던 해방감을 담은 곡이에요. 걱정도 두려움도 빗물에 씻겨 내려가는 그 순간의 자유를 표현했습니다.
+        </div>
+        <div class="story-quote">"Alive in every single touch"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">07</div>
+      <div class="track-body">
+        <div class="track-title">Half Century</div>
+        <div class="track-genre">CINEMATIC GARAGE ROCK</div>
+      </div>
+      <div class="track-dur">3:00</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          50년을 살아온 남자의 선언이에요. 상처도 실패도 모두 내 것이고, 가장 좋은 챕터는 아직 시작도 안 했다는 희망의 노래입니다.
+        </div>
+        <div class="story-quote">"Best chapters haven't started yet"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">08</div>
+      <div class="track-body">
+        <div class="track-title">Moonlight at Sea</div>
+        <div class="track-genre">GARAGE ROCK SYNTHWAVE</div>
+      </div>
+      <div class="track-dur">3:10</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          달빛 내리는 바다에서 시작해 우주까지 뻗어나가는 곡이에요. 광활함 속에서도 연결된 우리를 노래합니다.
+        </div>
+        <div class="story-quote">"We're just a tiny dot"</div>
+      </div>
+    </div>
+
+    <div class="track-row" onclick="toggleTrack(this)">
+      <div class="track-num">09</div>
+      <div class="track-body">
+        <div class="track-title">아침이 밝았네</div>
+        <div class="track-genre">KOREAN HEALING BALLAD</div>
+      </div>
+      <div class="track-dur">3:20</div>
+      <div class="track-story">
+        <div class="embed-slot">
+          <div class="embed-placeholder">🎧 SoundCloud 임베드 코드를 여기에 붙여넣으세요</div>
+        </div>
+        <div class="story-text" style="margin-top:14px">
+          긴 어둠을 혼자 걸어왔다고 생각했는데 — 뒤를 돌아보니 누군가 늘 함께였다는 이야기예요. 아내에게 바칩니다.
+        </div>
+        <div class="story-quote">"뒤에 누군가 같이 걸었다는 걸"</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="page-about" class="page">
+    <div class="section-label">ABOUT</div>
+    <div class="about-hero">
+      <div class="about-cover">
+        <div class="about-cover-moon"></div>
+        <div class="about-cover-text">HANS</div>
+      </div>
+      <div class="about-desc">1974년생 한 남자의 인생을 담은 첫 번째 앨범.<br>기술이 아닌 감정이 먼저였습니다.</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">9</div><div class="stat-label">TRACKS</div></div>
+      <div class="stat"><div class="stat-num">50</div><div class="stat-label">YEARS</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">MEMORIES</div></div>
+    </div>
+    <div class="about-section">
+      <h3>앨범에 대하여</h3>
+      <p>골목길 라디오 소리가 들리던 어린 시절부터, 강릉 가는 버스 안에서 아버지 미소를 떠올리던 중년까지 — 50년의 기억을 담았습니다.<br><br>
+      사랑했던 사람, 그리운 고향, 호숫가의 고요함, 빗속의 해방감, 그리고 뒤에서 묵묵히 함께 걸어준 아내와 어머니.<br><br>
+      모든 곡은 Claude AI와 함께 Suno로 만들었습니다. 기술이 아닌 감정이 먼저였습니다.</p>
+    </div>
+    <div class="about-section" style="margin-top:1.5rem">
+      <h3>만든 이에 대하여</h3>
+      <p>1974년 강릉 출생. 평범한 직장인이자 아버지이자 남편.<br>쉰이 넘어 처음으로 내 이야기를 노래로 만들었습니다.<br>가장 좋은 챕터는 아직 시작되지 않았다고 믿습니다.</p>
+    </div>
+  </div>
+
+  <div id="page-guide" class="page">
+    <div class="section-label">GITHUB PAGES 올리기</div>
+    <div class="guide-step">
+      <div class="step-badge">1</div>
+      <div class="step-content">
+        <h4>GitHub 가입</h4>
+        <p>github.com 에서 무료 가입. 이메일 인증까지 완료하세요.</p>
+        <div class="code-block">→ github.com → Sign up (무료)</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">2</div>
+      <div class="step-content">
+        <h4>새 저장소 만들기</h4>
+        <p>로그인 후 우측 상단 + 버튼 → New repository</p>
+        <div class="code-block">Repository name: hans-album<br>✅ Public 선택<br>✅ Add README 체크<br>→ Create repository</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">3</div>
+      <div class="step-content">
+        <h4>index.html 업로드</h4>
+        <p>저장소 페이지에서 Add file → Upload files → 이 HTML 파일 드래그 → Commit changes</p>
+        <div class="code-block">Add file → Upload files<br>→ index.html 드래그앤드롭<br>→ Commit changes 클릭</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">4</div>
+      <div class="step-content">
+        <h4>GitHub Pages 활성화</h4>
+        <p>Settings → Pages → Source: Deploy from branch → Branch: main → Save</p>
+        <div class="code-block">Settings → Pages<br>Source: Deploy from branch<br>Branch: main / (root)<br>→ Save</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">5</div>
+      <div class="step-content">
+        <h4>사이트 주소 확인</h4>
+        <p>2~3분 후 자동으로 사이트가 생성됩니다!</p>
+        <div class="code-block">https://[내아이디].github.io/hans-album<br><br>예: https://hans1974.github.io/hans-album</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function toggleTrack(row){
+  const story=row.querySelector('.track-story');
+  const isOpen=story.classList.contains('open');
+  document.querySelectorAll('.track-story.open').forEach(s=>s.classList.remove('open'));
+  if(!isOpen){ story.classList.add('open'); }
+}
+</script>
+</body>
+</html>
