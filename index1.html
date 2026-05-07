@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>First Album of Hans</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1410;
+  --paper: #f5f0e8;
+  --cream: #ede8dc;
+  --warm: #c8a96e;
+  --muted: #8a7f72;
+  --faint: #d4cfc6;
+  --accent: #2c4a6e;
+  --red: #8b3a2a;
+  --green: #2a6a3a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif KR', serif; min-height: 100vh; }
+
+/* HEADER */
+.site-header { position: relative; background: var(--ink); color: var(--paper); padding: 3rem 2rem 2rem; overflow: hidden; }
+.header-grain { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); opacity: 0.3; pointer-events: none; }
+.header-inner { position: relative; max-width: 720px; margin: 0 auto; display: flex; gap: 2rem; align-items: flex-end; }
+.album-cover { width: 120px; height: 120px; background: linear-gradient(135deg, #0d1f3c 0%, #1a3a6e 50%, #2c4a6e 100%); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 4px 4px 20px rgba(0,0,0,0.4); flex-shrink: 0; }
+.cover-moon { width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #eef6ff, #aac8e8); }
+.cover-label { font-family: 'Space Mono', monospace; font-size: 8px; color: #8ab8e0; letter-spacing: 3px; text-align: center; }
+.header-text { flex: 1; padding-bottom: 4px; }
+.album-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--warm); letter-spacing: 3px; margin-bottom: 8px; }
+.album-title { font-family: 'DM Serif Display', serif; font-size: 2rem; line-height: 1.1; color: var(--paper); margin-bottom: 8px; }
+.album-meta { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+
+/* NAV */
+.nav-tabs { background: var(--cream); border-bottom: 1px solid var(--faint); position: sticky; top: 0; z-index: 100; }
+.nav-inner { max-width: 720px; margin: 0 auto; display: flex; }
+.tab { padding: 14px 20px; font-size: 12px; font-family: 'Space Mono', monospace; letter-spacing: 1px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* MAIN */
+.main { max-width: 720px; margin: 0 auto; padding: 2rem; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* SECTION HEADER */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; }
+.section-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 4px; color: var(--muted); display: flex; align-items: center; gap: 12px; flex: 1; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--faint); }
+
+/* PLAYLIST CONTROL */
+.playlist-control { display: flex; align-items: center; gap: 10px; background: var(--cream); border: 1px solid var(--faint); border-radius: 4px; padding: 7px 14px; flex-shrink: 0; }
+.playlist-checkbox-wrap { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.playlist-checkbox { width: 16px; height: 16px; border-radius: 3px; border: 1.5px solid var(--muted); background: white; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+.playlist-checkbox.checked { background: var(--ink); border-color: var(--ink); }
+.playlist-checkbox.checked::after { content: '✓'; font-size: 10px; color: white; font-weight: bold; }
+.playlist-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; white-space: nowrap; }
+.playlist-divider { width: 1px; height: 18px; background: var(--faint); }
+.playlist-play-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+.playlist-play-btn:hover { background: var(--accent); }
+.playlist-play-btn:disabled { background: var(--faint); cursor: not-allowed; }
+.playlist-play-icon { color: white; font-size: 10px; margin-left: 2px; }
+.playlist-play-icon.pause { margin-left: 0; font-size: 9px; }
+.selected-count { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--green); letter-spacing: 1px; white-space: nowrap; }
+
+/* NOW PLAYING BAR */
+.now-playing-bar { background: var(--ink); color: var(--paper); border-radius: 4px; padding: 12px 16px; margin-bottom: 1rem; display: none; animation: slideDown 0.2s ease; }
+.now-playing-bar.visible { display: flex; align-items: center; gap: 14px; }
+.np-info { flex: 1; min-width: 0; }
+.np-label { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--warm); letter-spacing: 2px; margin-bottom: 3px; }
+.np-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-genre { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
+.np-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.np-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); cursor: pointer; color: var(--paper); font-size: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.np-btn:hover { background: rgba(255,255,255,0.2); }
+.np-btn.main { width: 34px; height: 34px; background: var(--warm); border-color: var(--warm); }
+.np-btn.main:hover { background: #d4b87a; }
+.np-progress { flex: 1; min-width: 60px; }
+.np-progress-bar { width: 100%; height: 2px; background: rgba(255,255,255,0.2); border-radius: 1px; position: relative; overflow: hidden; }
+.np-progress-fill { height: 100%; background: var(--warm); border-radius: 1px; width: 0%; transition: width 0.1s linear; }
+.np-time { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 4px; display: flex; justify-content: space-between; }
+
+/* TRACK ROWS */
+.track-row { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 0 12px; align-items: center; border-top: 1px solid var(--faint); padding: 1rem 0; transition: background 0.15s; }
+.track-row:last-child { border-bottom: 1px solid var(--faint); }
+.track-row:hover { background: var(--cream); margin: 0 -2rem; padding: 1rem 2rem; }
+.track-row.playing .track-num { color: var(--warm); }
+.track-row.playing .track-title { color: var(--accent); }
+.track-num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+.track-body { min-width: 0; cursor: pointer; }
+.track-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.track-genre { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+.track-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.tag-title { font-size: 10px; font-family: 'Space Mono', monospace; padding: 2px 8px; background: var(--accent); color: white; border-radius: 2px; }
+.track-dur { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+.track-check-col { display: flex; align-items: center; justify-content: center; }
+.track-cb { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--faint); background: white; cursor: pointer; transition: all 0.15s; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.track-cb:hover { border-color: var(--muted); }
+.track-cb.checked { background: var(--green); border-color: var(--green); }
+.track-cb.checked::after { content: '✓'; font-size: 8px; color: white; font-weight: bold; }
+.track-cb.playing-dot { background: var(--warm); border-color: var(--warm); animation: pulse 1s infinite; }
+.track-cb.playing-dot::after { content: '♪'; font-size: 8px; color: white; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* STORY */
+.track-story { grid-column: 1 / 5; margin-top: 12px; padding: 16px; background: var(--cream); border-left: 3px solid var(--warm); border-radius: 0 4px 4px 0; display: none; }
+.track-story.open { display: block; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.story-text { font-size: 13px; line-height: 1.9; color: #3a3028; margin-bottom: 12px; }
+.story-quote { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 14px; color: var(--accent); line-height: 1.6; padding: 8px 0 8px 16px; border-left: 2px solid var(--accent); }
+.player-slot { margin-top: 14px; padding: 12px; background: white; border-radius: 4px; border: 1px dashed var(--faint); }
+.player-slot-text { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; text-align: center; }
+.player-mock { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.play-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.play-circle:hover { background: var(--accent); }
+.play-icon { color: white; font-size: 12px; margin-left: 2px; }
+.waveform { flex: 1; height: 24px; display: flex; align-items: center; gap: 2px; }
+.waveform-bar { flex: 1; border-radius: 1px; background: var(--faint); }
+.waveform-bar.active { background: var(--warm); }
+.time-display { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+
+/* ABOUT */
+.about-hero { display: flex; gap: 2rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--faint); }
+.about-cover { width: 80px; height: 80px; flex-shrink: 0; background: linear-gradient(135deg, #0d1f3c, #2c4a6e); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+.about-cover-moon { width: 20px; height: 20px; border-radius: 50%; background: #ddeeff; }
+.about-cover-text { font-size: 6px; color: #8ab8e0; letter-spacing: 2px; }
+.about-desc { font-size: 14px; line-height: 2; color: #3a3028; }
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--faint); margin-bottom: 2rem; }
+.stat { background: var(--paper); padding: 16px; text-align: center; }
+.stat-num { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--ink); }
+.stat-label { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-top: 2px; }
+.about-section { margin-bottom: 1.5rem; }
+.about-section h3 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 8px; }
+.about-section p { font-size: 13px; line-height: 1.9; color: #3a3028; }
+
+/* GUIDE */
+.guide-step { display: flex; gap: 16px; padding: 1.5rem 0; border-bottom: 1px solid var(--faint); }
+.guide-step:last-child { border-bottom: none; }
+.step-badge { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: 'Space Mono', monospace; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.step-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.step-content p { font-size: 13px; line-height: 1.8; color: #3a3028; }
+.code-block { margin-top: 10px; padding: 10px 14px; background: var(--ink); color: #a8c8e0; font-family: 'Space Mono', monospace; font-size: 11px; border-radius: 4px; line-height: 1.8; }
+.platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
+.platform-card { padding: 14px; border: 1px solid var(--faint); border-radius: 4px; background: var(--paper); }
+.platform-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.platform-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.platform-badge { display: inline-block; font-size: 10px; font-family: 'Space Mono', monospace; padding: 2px 8px; border-radius: 2px; margin-bottom: 6px; }
+.badge-free { background: #e8f4e8; color: #2a6a2a; }
+.badge-paid { background: #f4ece8; color: #6a2a1a; }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-grain"></div>
+  <div class="header-inner">
+    <div class="album-cover">
+      <div class="cover-moon"></div>
+      <div class="cover-label">FIRST<br>ALBUM</div>
+    </div>
+    <div class="header-text">
+      <div class="album-eyebrow">HANS · 2026</div>
+      <div class="album-title">First Album<br><em>of Hans</em></div>
+      <div class="album-meta">9 TRACKS · INDIE / K-POP / GARAGE ROCK</div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-inner">
+    <button class="tab active" onclick="showTab('tracks',this)">TRACKS</button>
+    <button class="tab" onclick="showTab('about',this)">ABOUT</button>
+    <button class="tab" onclick="showTab('guide',this)">NOTION 가이드</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TRACKS PAGE -->
+  <div id="page-tracks" class="page active">
+
+    <div class="now-playing-bar" id="npBar">
+      <div class="np-info">
+        <div class="np-label">NOW PLAYING</div>
+        <div class="np-title" id="npTitle">—</div>
+        <div class="np-genre" id="npGenre">—</div>
+      </div>
+      <div class="np-progress">
+        <div class="np-progress-bar"><div class="np-progress-fill" id="npFill"></div></div>
+        <div class="np-time"><span id="npCur">0:00</span><span id="npTotal">3:00</span></div>
+      </div>
+      <div class="np-controls">
+        <button class="np-btn" onclick="playPrev()">◀◀</button>
+        <button class="np-btn main" id="npPlayBtn" onclick="toggleNpPlay()">⏸</button>
+        <button class="np-btn" onclick="playNext()">▶▶</button>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-label">TRACK LIST</div>
+      <div class="playlist-control">
+        <span class="selected-count" id="selCount" style="display:none"></span>
+        <div class="playlist-checkbox-wrap" onclick="toggleSelectAll()">
+          <div class="playlist-checkbox" id="selectAllCb"></div>
+          <span class="playlist-label">전체재생</span>
+        </div>
+        <div class="playlist-divider"></div>
+        <button class="playlist-play-btn" id="playlistPlayBtn" onclick="startPlaylist()" disabled>
+          <span class="playlist-play-icon" id="playlistIcon">▶</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="trackList">
+
+      <div class="track-row" data-idx="0">
+        <div class="track-num">01</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">그대여</div>
+          <div class="track-genre">K-POP HIP-HOP</div>
+        </div>
+        <div class="track-right"><span class="tag-title">TITLE</span><span class="track-dur">3:24</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv0"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">과거의 사랑했던 그녀를 떠올리며 쓴 곡이에요. 빛과 저무는 날의 대비로 그리움을 표현했습니다.</div>
+          <div class="story-quote">"빛나던 날이 있으면 저무는 날도 있는 법<br>후회해도 소용없어, I miss you"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="1">
+        <div class="track-num">02</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">강릉 가는 길</div>
+          <div class="track-genre">RETRO FOLK BALLAD</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:10</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv1"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">고향 강릉으로 가는 버스 안에서 쓴 곡이에요. 변해가는 고향 거리에서도 변하지 않는 내 마음을 담았습니다.</div>
+          <div class="story-quote">"어머니 미소 속에서 다시 찾은 나의 根"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="2">
+        <div class="track-num">03</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">호숫가에서</div>
+          <div class="track-genre">INDIE LOFI FOLK</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:05</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv2"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">춘천 호숫가를 산책하다 쓴 곡이에요. 작은 것들이 던져주는 삶의 질문을 담았습니다.</div>
+          <div class="story-quote">"이 길 끝엔 무엇이 있을까"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="3">
+        <div class="track-num">04</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">Your Smile</div>
+          <div class="track-genre">KOREAN R&amp;B NEO SOUL</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:20</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv3"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">아내와 어머니에게 바치는 곡이에요. 묵묵히 함께해준 두 사람의 미소가 내 삶의 등불이 되었다는 이야기입니다.</div>
+          <div class="story-quote">"Thanks for mom and wife"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="4">
+        <div class="track-num">05</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">1974년생</div>
+          <div class="track-genre">INDIE POP BALLAD</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:30</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv4"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">쉰이 넘어 돌아보는 내 인생 이야기예요. 모든 순간이 소중했다는 고백입니다.</div>
+          <div class="story-quote">"난 여전히 1974년생"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="5">
+        <div class="track-num">06</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">Dancin' in the Rain</div>
+          <div class="track-genre">SYNTHWAVE INDIE ROCK</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:15</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv5"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">빗속에서 느꼈던 해방감을 담은 곡이에요. 인생에서 가끔은 빗속에서 춤춰도 괜찮다는 이야기예요.</div>
+          <div class="story-quote">"Alive in every single touch"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="6">
+        <div class="track-num">07</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">Half Century</div>
+          <div class="track-genre">CINEMATIC GARAGE ROCK</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:00</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv6"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">50년을 살아온 남자의 선언이에요. 가장 좋은 챕터는 아직 시작도 안 했다는 희망의 노래입니다.</div>
+          <div class="story-quote">"Best chapters haven't started yet"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="7">
+        <div class="track-num">08</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">Moonlight at Sea</div>
+          <div class="track-genre">GARAGE ROCK SYNTHWAVE</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:10</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv7"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">달빛 내리는 바다에서 시작해 우주까지 뻗어나가는 곡이에요. 광활함 속에서도 연결된 우리를 노래합니다.</div>
+          <div class="story-quote">"We're just a tiny dot"</div>
+        </div>
+      </div>
+
+      <div class="track-row" data-idx="8">
+        <div class="track-num">09</div>
+        <div class="track-body" onclick="toggleStory(this.closest('.track-row'))">
+          <div class="track-title">아침이 밝았네</div>
+          <div class="track-genre">KOREAN HEALING BALLAD</div>
+        </div>
+        <div class="track-right"><span class="track-dur">3:20</span></div>
+        <div class="track-check-col"><div class="track-cb" onclick="toggleTrackCheck(this,event)"></div></div>
+        <div class="track-story">
+          <div class="player-slot">
+            <div class="player-slot-text">🎧 SoundCloud URL을 여기에 임베드하세요</div>
+            <div class="player-mock"><div class="play-circle"><span class="play-icon">▶</span></div><div class="waveform" id="wv8"></div><div class="time-display">0:00</div></div>
+          </div>
+          <div class="story-text" style="margin-top:14px">긴 어둠을 혼자 걸어왔다고 생각했는데 — 뒤를 돌아보니 누군가 늘 함께였다는 이야기예요. 아내에게 바칩니다.</div>
+          <div class="story-quote">"뒤에 누군가 같이 걸었다는 걸"</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ABOUT PAGE -->
+  <div id="page-about" class="page">
+    <div class="section-header"><div class="section-label">ABOUT</div></div>
+    <div class="about-hero">
+      <div class="about-cover"><div class="about-cover-moon"></div><div class="about-cover-text">HANS</div></div>
+      <div class="about-desc">1974년생 한 남자의 인생을 담은 첫 번째 앨범.<br>기술이 아닌 감정이 먼저였습니다.</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">9</div><div class="stat-label">TRACKS</div></div>
+      <div class="stat"><div class="stat-num">50</div><div class="stat-label">YEARS</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">MEMORIES</div></div>
+    </div>
+    <div class="about-section">
+      <h3>앨범에 대하여</h3>
+      <p>골목길 라디오 소리가 들리던 어린 시절부터, 강릉 가는 버스 안에서 아버지 미소를 떠올리던 중년까지 — 50년의 기억을 담았습니다.<br><br>모든 곡은 Claude AI와 함께 Suno로 만들었습니다. 기술이 아닌 감정이 먼저였습니다.</p>
+    </div>
+    <div class="about-section" style="margin-top:1.5rem">
+      <h3>만든 이에 대하여</h3>
+      <p>1974년 강릉 출생. 평범한 직장인이자 아버지이자 남편.<br>쉰이 넘어 처음으로 내 이야기를 노래로 만들었습니다.<br>가장 좋은 챕터는 아직 시작되지 않았다고 믿습니다.</p>
+    </div>
+  </div>
+
+  <!-- GUIDE PAGE -->
+  <div id="page-guide" class="page">
+    <div class="section-header"><div class="section-label">NOTION 사이트 만들기</div></div>
+    <div class="guide-step">
+      <div class="step-badge">1</div>
+      <div class="step-content"><h4>Suno에서 MP3 다운로드</h4><p>완성된 각 곡의 ··· 메뉴 → Download 클릭 → MP3 저장</p><div class="code-block">Suno → 라이브러리 → 곡 선택 → ··· → Download Audio</div></div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">2</div>
+      <div class="step-content"><h4>SoundCloud 업로드</h4><p>soundcloud.com 무료 가입 후 각 곡 업로드. Share → Embed 탭에서 임베드 코드 복사.</p><div class="code-block">Upload → Track Title 입력 → Save<br>Share → Embed → 코드 복사</div></div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">3</div>
+      <div class="step-content"><h4>Notion 페이지 구조</h4><div class="code-block">📁 First Album of Hans<br>├── 🎨 앨범 커버 이미지<br>├── 📝 앨범 소개<br>├── 🎵 01. 그대여<br>│&nbsp;&nbsp;&nbsp;├── /embed → SoundCloud URL<br>│&nbsp;&nbsp;&nbsp;├── 가사<br>│&nbsp;&nbsp;&nbsp;└── 이 곡의 사연<br>└── ... (반복)</div></div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">4</div>
+      <div class="step-content"><h4>플레이어 임베드</h4><div class="code-block">Notion: /embed 입력 → Enter<br>SoundCloud URL 붙여넣기 → Enter<br>→ 플레이어 자동 생성 ✓</div></div>
+    </div>
+    <div class="guide-step">
+      <div class="step-badge">5</div>
+      <div class="step-content">
+        <h4>공개 & 공유</h4>
+        <p>Share → Share to web → ON → 링크 복사</p>
+        <div class="platform-grid">
+          <div class="platform-card"><span class="platform-badge badge-free">무료</span><div class="platform-name">Notion</div><div class="platform-desc">가장 쉬움. 글쓰기+임베드.</div></div>
+          <div class="platform-card"><span class="platform-badge badge-free">무료</span><div class="platform-name">SoundCloud</div><div class="platform-desc">음악 전용. Notion 임베드 연결.</div></div>
+          <div class="platform-card"><span class="platform-badge badge-free">무료</span><div class="platform-name">GitHub Pages</div><div class="platform-desc">이 HTML 그대로 업로드 가능.</div></div>
+          <div class="platform-card"><span class="platform-badge badge-paid">유료</span><div class="platform-name">Squarespace</div><div class="platform-desc">음악 앨범 전용 템플릿 제공.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const tracks = [
+  {title:'그대여', genre:'K-POP HIP-HOP', dur:'3:24', secs:204},
+  {title:'강릉 가는 길', genre:'RETRO FOLK BALLAD', dur:'3:10', secs:190},
+  {title:'호숫가에서', genre:'INDIE LOFI FOLK', dur:'3:05', secs:185},
+  {title:'Your Smile', genre:'KOREAN R&B NEO SOUL', dur:'3:20', secs:200},
+  {title:'1974년생', genre:'INDIE POP BALLAD', dur:'3:30', secs:210},
+  {title:"Dancin' in the Rain", genre:'SYNTHWAVE INDIE ROCK', dur:'3:15', secs:195},
+  {title:'Half Century', genre:'CINEMATIC GARAGE ROCK', dur:'3:00', secs:180},
+  {title:'Moonlight at Sea', genre:'GARAGE ROCK SYNTHWAVE', dur:'3:10', secs:190},
+  {title:'아침이 밝았네', genre:'KOREAN HEALING BALLAD', dur:'3:20', secs:200}
+];
+
+let checkedTracks = new Set();
+let playlist = [];
+let playlistIdx = 0;
+let isPlaying = false;
+let progressInterval = null;
+let currentSecs = 0;
+let currentTrackSecs = 0;
+let allSelected = false;
+
+// Waveform init
+for(let i=0;i<9;i++){
+  const wv=document.getElementById('wv'+i);
+  if(!wv)continue;
+  for(let j=0;j<28;j++){
+    const b=document.createElement('div');
+    b.className='waveform-bar';
+    b.style.height=(6+Math.random()*14)+'px';
+    if(j<9)b.classList.add('active');
+    wv.appendChild(b);
+  }
+}
+
+function showTab(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleStory(row){
+  const story=row.querySelector('.track-story');
+  const isOpen=story.classList.contains('open');
+  document.querySelectorAll('.track-story.open').forEach(s=>s.classList.remove('open'));
+  if(!isOpen)story.classList.add('open');
+}
+
+function toggleTrackCheck(cb,e){
+  e.stopPropagation();
+  const row=cb.closest('.track-row');
+  const idx=parseInt(row.dataset.idx);
+  if(checkedTracks.has(idx)){
+    checkedTracks.delete(idx);
+    cb.classList.remove('checked');
+  } else {
+    checkedTracks.add(idx);
+    cb.classList.add('checked');
+  }
+  updateSelectionUI();
+}
+
+function toggleSelectAll(){
+  allSelected=!allSelected;
+  const allCbs=document.querySelectorAll('.track-cb');
+  const allRows=document.querySelectorAll('.track-row');
+  if(allSelected){
+    allRows.forEach(r=>checkedTracks.add(parseInt(r.dataset.idx)));
+    allCbs.forEach(cb=>{cb.classList.add('checked');cb.classList.remove('playing-dot');});
+  } else {
+    checkedTracks.clear();
+    allCbs.forEach(cb=>cb.classList.remove('checked'));
+  }
+  updateSelectionUI();
+}
+
+function updateSelectionUI(){
+  const n=checkedTracks.size;
+  const total=tracks.length;
+  const cb=document.getElementById('selectAllCb');
+  const btn=document.getElementById('playlistPlayBtn');
+  const count=document.getElementById('selCount');
+  cb.style.background='';cb.style.borderColor='';cb.innerHTML='';
+  if(n===0){cb.classList.remove('checked');allSelected=false;}
+  else if(n===total){cb.classList.add('checked');allSelected=true;}
+  else {
+    cb.classList.remove('checked');allSelected=false;
+    cb.style.background='#c8a96e44';cb.style.borderColor='var(--warm)';
+    cb.innerHTML='<span style="font-size:10px;color:var(--warm)">—</span>';
+  }
+  count.style.display=n>0?'block':'none';
+  if(n>0)count.textContent=n+'/'+total;
+  btn.disabled=n===0;
+}
+
+function startPlaylist(){
+  if(checkedTracks.size===0)return;
+  playlist=Array.from(checkedTracks).sort((a,b)=>a-b);
+  playlistIdx=0;
+  loadTrack(playlist[0]);
+  setPlaying(true);
+}
+
+function loadTrack(idx){
+  const t=tracks[idx];
+  document.getElementById('npTitle').textContent=t.title;
+  document.getElementById('npGenre').textContent=t.genre;
+  document.getElementById('npTotal').textContent=t.dur;
+  document.getElementById('npBar').classList.add('visible');
+  currentSecs=0;currentTrackSecs=t.secs;
+  document.getElementById('npFill').style.width='0%';
+  document.getElementById('npCur').textContent='0:00';
+  document.querySelectorAll('.track-row').forEach(r=>{
+    r.classList.remove('playing');
+    const cb=r.querySelector('.track-cb');
+    if(cb){cb.classList.remove('playing-dot');}
+  });
+  const activeRow=document.querySelector('.track-row[data-idx="'+idx+'"]');
+  if(activeRow){
+    activeRow.classList.add('playing');
+    const cb=activeRow.querySelector('.track-cb');
+    if(cb){cb.classList.remove('checked');cb.classList.add('playing-dot');}
+  }
+}
+
+function setPlaying(state){
+  isPlaying=state;
+  const btn=document.getElementById('npPlayBtn');
+  const pIcon=document.getElementById('playlistIcon');
+  if(state){btn.textContent='⏸';pIcon.textContent='⏸';pIcon.classList.add('pause');startProgress();}
+  else{btn.textContent='▶';pIcon.textContent='▶';pIcon.classList.remove('pause');stopProgress();}
+}
+
+function toggleNpPlay(){setPlaying(!isPlaying);}
+
+function playNext(){
+  if(playlist.length===0)return;
+  playlistIdx=(playlistIdx+1)%playlist.length;
+  loadTrack(playlist[playlistIdx]);
+  if(isPlaying)startProgress();
+}
+
+function playPrev(){
+  if(playlist.length===0)return;
+  playlistIdx=(playlistIdx-1+playlist.length)%playlist.length;
+  loadTrack(playlist[playlistIdx]);
+  if(isPlaying)startProgress();
+}
+
+function startProgress(){
+  stopProgress();
+  progressInterval=setInterval(()=>{
+    currentSecs++;
+    const pct=Math.min((currentSecs/currentTrackSecs)*100,100);
+    document.getElementById('npFill').style.width=pct+'%';
+    const m=Math.floor(currentSecs/60);
+    const s=currentSecs%60;
+    document.getElementById('npCur').textContent=m+':'+(s<10?'0':'')+s;
+    if(currentSecs>=currentTrackSecs){stopProgress();playNext();}
+  },1000);
+}
+
+function stopProgress(){
+  if(progressInterval){clearInterval(progressInterval);progressInterval=null;}
+}
+</script>
+</body>
+</html>
