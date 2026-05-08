@@ -3,6 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+      <div style="
+  margin-top: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+">
+  <span>👁 VISITORS</span>
+  <span style="
+    background: var(--accent);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    letter-spacing: 2px;
+  " id="countDisplay">——</span>
+</div>
+
+<script>
+// 1차 시도 - api.counterapi.dev (안정적 무료 글로벌 카운터)
+fetch('https://api.counterapi.dev/v1/han199399-album/visits/up')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('countDisplay').textContent =
+      data.count.toString().padStart(6, '0');
+  })
+  .catch(() => {
+    // 2차 백업 - localStorage
+    let count = parseInt(localStorage.getItem('hans_visit') || '0');
+    const lastVisit = localStorage.getItem('hans_last');
+    const now = new Date().toDateString();
+    if(lastVisit !== now){
+      count++;
+      localStorage.setItem('hans_visit', count);
+      localStorage.setItem('hans_last', now);
+    }
+    document.getElementById('countDisplay').textContent =
+      count.toString().padStart(6, '0');
+  });
+</script>
+
 
 <title>First Album of Hans</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -169,50 +214,6 @@ body {
       <div class="album-meta">8 TRACKS · INDIE / K-POP / GARAGE ROCK</div>
 
 
-      
-      <div style="
-  margin-top: 10px;
-  font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-">
-  <span>👁 VISITORS</span>
-  <span style="
-    background: var(--accent);
-    color: white;
-    padding: 2px 10px;
-    border-radius: 3px;
-    font-size: 11px;
-    letter-spacing: 2px;
-  " id="countDisplay">——</span>
-</div>
-
-<script>
-// 1차 시도 - api.counterapi.dev (안정적 무료 글로벌 카운터)
-fetch('https://api.counterapi.dev/v1/han199399-album/visits/up')
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('countDisplay').textContent =
-      data.count.toString().padStart(6, '0');
-  })
-  .catch(() => {
-    // 2차 백업 - localStorage
-    let count = parseInt(localStorage.getItem('hans_visit') || '0');
-    const lastVisit = localStorage.getItem('hans_last');
-    const now = new Date().toDateString();
-    if(lastVisit !== now){
-      count++;
-      localStorage.setItem('hans_visit', count);
-      localStorage.setItem('hans_last', now);
-    }
-    document.getElementById('countDisplay').textContent =
-      count.toString().padStart(6, '0');
-  });
-</script>
       
     </div>
   </div>
