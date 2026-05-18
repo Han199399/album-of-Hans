@@ -356,13 +356,13 @@
 <!-- ─── TITLE SCREEN ─── -->
 <div id="title-screen">
   <p class="title-deco">Webtoon · 2024</p>
-  <h1 class="title-main">웹툰 제목</h1>
-  <p class="title-sub">총 23화 · 단편 시리즈</p>
+  <h1 class="title-main">여덟 계단</h1>
+  <p class="title-sub">제1편 : 23 scenes </p>
 
   <div class="cover-wrap">
     <!-- 첫 번째 이미지가 표지로 사용됩니다 -->
-    <img id="cover-img" src="" alt="표지" />
-    <span class="cover-badge">23화</span>
+    <img id="cover" src="" alt="표지" />
+    <span class="cover-badge">23 씬</span>
   </div>
 
   <button class="start-btn" onclick="startReading()">
@@ -444,7 +444,7 @@
     return `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
   }
 
-  const TITLE = "웹툰 제목"; // ← 실제 제목으로 바꾸세요
+  const TITLE = "여덟 계단"; // ← 실제 제목으로 바꾸세요
   const TOTAL = FILE_IDS.length;
 
   let current = 0;
